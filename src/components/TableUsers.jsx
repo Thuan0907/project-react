@@ -5,20 +5,25 @@ import ReactPaginate from "react-paginate";
 import ModalAddNew from "./ModalAddNew";
 import ModalEditUser from "./ModalEditUser";
 import _ from "lodash";
+import ModalConfirm from "./ModalConfirm";
 
 const TableUsers = () => {
   const [isShowModalAddNew, setIsShowModalAddNew] = useState(false);
   const [isShowModalEdit, setIsShowModalEdit] = useState(false);
+  const [isShowModalDelete, setIsShowModalDelete] = useState(false);
 
-  const handleClose = () => {
-    setIsShowModalAddNew(false);
-    setIsShowModalEdit(false);
-  };
   const [listUsers, setListUsers] = useState([]);
   const [totalUsers, setTotalUsers] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
 
   const [dataUserEdit, setDataUserEdit] = useState({});
+  const [dataUserDelete, setDataUserDelete] = useState({});
+
+  const handleClose = () => {
+    setIsShowModalAddNew(false);
+    setIsShowModalEdit(false);
+    setIsShowModalDelete(false);
+  };
 
   useEffect(() => {
     // call API
@@ -54,6 +59,17 @@ const TableUsers = () => {
   const handleEditUser = (user) => {
     setDataUserEdit(user);
     setIsShowModalEdit(true);
+  };
+
+  const handleDeleteUser = (user) => {
+    setIsShowModalDelete(true);
+    setDataUserDelete(user);
+  };
+
+  const handleDeleteUserFormModal = (user) => {
+    let cloneListUsers = _.cloneDeep(listUsers);
+    cloneListUsers = cloneListUsers.filter((item) => item.id !== user.id);
+    setListUsers(cloneListUsers);
   };
 
   return (
@@ -97,7 +113,12 @@ const TableUsers = () => {
                     >
                       Edit
                     </button>
-                    <button className="btn btn-danger">Delete</button>
+                    <button
+                      className="btn btn-danger"
+                      onClick={() => handleDeleteUser(item)}
+                    >
+                      Delete
+                    </button>
                   </td>
                 </tr>
               );
@@ -137,6 +158,13 @@ const TableUsers = () => {
         handleClose={handleClose}
         dataUserEdit={dataUserEdit}
         handleEditUserFromModal={handleEditUserFromModal}
+      />
+
+      <ModalConfirm
+        show={isShowModalDelete}
+        handleClose={handleClose}
+        dataUserDelete={dataUserDelete}
+        handleDeleteUserFormModal={handleDeleteUserFormModal}
       />
     </>
   );
